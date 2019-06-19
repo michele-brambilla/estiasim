@@ -1,8 +1,10 @@
+from __future__ import absolute_import
+
 import pcaspy
 import pcaspy.tools
 
-from devices.motorsim import Motor, MotorEpicsDriver
-from devices.loggersim import log
+from pcaspysim.devices.loggersim import log
+from pcaspysim.devices.motorsim import Motor, MotorEpicsDriver
 
 
 class EpicsDevice(object):

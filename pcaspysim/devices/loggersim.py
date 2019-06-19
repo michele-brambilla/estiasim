@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+
 import logging
 
 log = logging.getLogger('dummy_application')

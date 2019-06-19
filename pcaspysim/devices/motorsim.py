@@ -1,16 +1,13 @@
-#!/usr/bin/env python
+from __future__ import absolute_import
 
-import math
 import threading
-import time
 
 import pcaspy.tools
 from pcaspy import Severity
 
-import devices.approaches as approaches
-from devices import log
-
-import devices.utils as utils
+import pcaspysim.devices.approaches as approaches
+import pcaspysim.devices.utils as utils
+from pcaspysim.devices import log
 
 db_base = {
     'RBV': {
@@ -90,8 +87,8 @@ db_base = {
         'description': 'Low limit switch | mm | Read/Write',
     },
     'CNEN': {
-        'type' : 'int',
-        'description' : 'Enable',
+        'type': 'int',
+        'description': 'Enable',
     },
     'MsgTxt': {
         'type': 'string',

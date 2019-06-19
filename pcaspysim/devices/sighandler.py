@@ -2,9 +2,11 @@
 Signal handler to allow to stop the program with SIGINT or SIGTERM (systemd).
 """
 
+from __future__ import absolute_import
+
 import signal
 
-from devices import log
+from pcaspysim.devices import log
 
 
 class SignalHandler(object):
@@ -16,7 +18,7 @@ class SignalHandler(object):
         signal.signal(signal.SIGTERM, self.handle_signal)
         signal.signal(signal.SIGHUP, self.handle_signal)
 
-    def handle_shutdown(self,):
+    def handle_shutdown(self, ):
         if self._handled_shutdown:
             log.warning('already handled_shutdown')
             return
@@ -28,5 +30,3 @@ class SignalHandler(object):
         self.handle_shutdown()
         if signum == signal.SIGINT:
             log.warning('Simulation did not shut down cleanly.')
-
-

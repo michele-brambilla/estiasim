@@ -1,14 +1,15 @@
-
 from __future__ import absolute_import
+
 import functools
 
-from devices import log
+from pcaspysim.devices import log
 
 string_types = str
 
+
 def run_async(func):
     from threading import Thread
-    from functools import   wraps
+    from functools import wraps
 
     @wraps(func)
     def async_func(*args, **kwargs):
@@ -33,13 +34,13 @@ class check_limits(object):
             upper = getattr(obj, self._upper) if isinstance(self._upper, str) \
                 else self._upper
             if (lower is None or lower <= new_value) and (upper is None or
-                                                           new_value <= upper):
+                                                          new_value <= upper):
                 return f(obj, new_value)
 
             if not self._silent:
                 log.error(
                     '{} is outside limits ({}, {})'.format(new_value, lower,
-                                                       upper))
+                                                           upper))
 
         return limit_checked
 
@@ -47,14 +48,14 @@ class check_limits(object):
 class Dummy(object):
     value = 0
     _low_limit = 0
-    _high_limit=1
+    _high_limit = 1
 
     @property
     def low_limit(self):
         return self._low_limit
 
     @low_limit.setter
-    def low_limit(self,value):
+    def low_limit(self, value):
         self._low_limit = value
 
     @property
@@ -62,11 +63,11 @@ class Dummy(object):
         return self._high_limit
 
     @high_limit.setter
-    def high_limit(self,value):
+    def high_limit(self, value):
         self._high_limit = value
 
-    @check_limits('low_limit','high_limit')
-    def move(self,target):
+    @check_limits('low_limit', 'high_limit')
+    def move(self, target):
         self.value = target
 
 

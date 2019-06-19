@@ -1,28 +1,32 @@
 #!/usr/bin/env python
+from __future__ import absolute_import
+
 import argparse
 from time import sleep
 
-from devices import EpicsDeviceSimulation, EpicsDevice, log, SignalHandler
+from pcaspysim.devices import (EpicsDevice, EpicsDeviceSimulation,
+                               SignalHandler, log)
 
 
-class SeleneGuide(EpicsDevice):
+class MetronomyCart(EpicsDevice):
     pass
 
 
 if __name__ == '__main__':
     ap = argparse.ArgumentParser()
-    ap.add_argument('-n', '--guide-name',
+    ap.add_argument('-n', '--cart-name',
                     default='PSI-ESTIARND:MC-MCU-01',
                     help='Used as prefix for the epics PVs')
-    ap.add_argument('-m', '--motors-name',
+    ap.add_argument('-m', '--motor-names',
                     nargs='+',
-                    default=['m10', 'm11', 'm12', 'm13', 'm14'],
+                    default=['m1', 'm2'],
                     help='Used as names for the epics PVs')
 
     args = ap.parse_args()
 
-    simulation = EpicsDeviceSimulation(args.guide_name, args.motors_name,
-                                       SeleneGuide)
+    log.info(args.motor_names)
+    simulation = EpicsDeviceSimulation(args.cart_name, args.motor_names,
+                                       MetronomyCart)
     simulation.start()
 
     signal_handler = SignalHandler()

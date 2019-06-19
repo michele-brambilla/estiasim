@@ -17,25 +17,25 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # *********************************************************************
 
+"""
+Defines functions that model typical behavior, such as a value approaching a target linearly at
+a certain rate.
+"""
 
-class GenericException(Exception):
-    """
-    This exception type is used to distinguish exceptions that are expected
-    from unexpected ones. This enables better error handling and more importantly
-    better presentation of errors to the users.
-    """
+from __future__ import absolute_import
 
-
-class LimitViolationException(Exception):
-    """
-    An exception that can be raised in a device to indicate a limit violation. It is for example
-    raised by the :class:`~lewis.core.utils.check_limits`.
-    """
+from time import sleep
 
 
-class AccessViolationException(Exception):
-    """
-    This exception can be raised in situation where the performed action (accessing a property or
-    similar) is not allowed. An example is :class:`~lewis.adapters.epics.BoundPV` for enforcing
-    read-only PVs.
-    """
+def linear(current, target, rate, dt):
+    sign = (target > current) - (target < current)
+
+    if not sign:
+        return current
+    new_value = current + sign * rate * 1e-3 * dt
+
+    if sign * new_value > sign * target:
+        return target
+
+    sleep(1e-3 * dt)
+    return new_value
