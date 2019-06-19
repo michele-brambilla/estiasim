@@ -69,17 +69,17 @@ class MotorEpicsInterface(EpicsInterface):
     Motor EPICS interface
     """
     pvs = {
-        'RBV': PV('target_position', read_only=True,
+        'RBV': PV('position', read_only=True,
                   doc='Readback value of the position setpoint in mm.'),
-        'VAL': PV('target_position',
+        'VAL': PV('target',
                   doc='Position setpoint in mm.'),
-        'STOP': PV('stop_state',
+        'STOP': PV('stop',
                    doc='Force the motor to stop '),
         'DMOV': PV('done_moving', read_only=True,
                    doc='True if the motor has finished its movement.'),
         'MOVN': PV('moving', read_only=True,
                    doc='True if the motor is moving.'),
-        'MISS': PV('target_miss', read_only=True,
+        'MISS': PV('miss', read_only=True,
                    doc='True if the motor couldn\'t reach the target.'),
         'HOMF': PV('homf', read_only=True,
                    doc='.'),
