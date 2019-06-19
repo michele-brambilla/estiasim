@@ -1,6 +1,27 @@
 # estiasim
 Simulation of the ESTIA device
 
+Two different simulations are available, corresponding to the two main 
+folders, based on  PCASPY and [LeWIS](https://github.com/ess-dmsc/lewis 
+"LeWIS's Homepage").
+
+## LeWIS
+Run it with
+```bash
+lewis -a /home/estiasim -k lewissim estia -p epics --adapter-options "epics:
+ {prefix: 'PSI-ESTIARNS:MC-MCU-01:<motorname>.'}"
+```
+ 
+ Unfortunately one simulation can only deal with one motor (so far).
+
+
+##PCASPY
+
+```bash
+python cartsim.py -m <list of motor names> 
+
+```
+
 ## EPICS PVs
 
 The EPICS PV prefix is 
