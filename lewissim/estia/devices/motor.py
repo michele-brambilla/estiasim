@@ -30,8 +30,8 @@ class DefaultMovingState(State):
     def in_state(self, dt):
         old_position = self._context.position
         self._context._position = approaches.linear(old_position,
-                                                   self._context.target,
-                                                   self._context.speed, dt)
+                                                    self._context.target,
+                                                    self._context.speed, dt)
         self.log.info('Moved position (%s -> %s), target=%s, speed=%s',
                       old_position,
                       self._context.position, self._context.target,
@@ -48,16 +48,16 @@ class SimulatedMotor(StateMachineDevice):
         self.homf = False
         self.homr = True
         self.motor_offset = 0.0
-        self.high_limit=1000.0
+        self.high_limit = 1000.0
         self.low_limit = 0.0
         self.soft_limit = 1.0
         self.high_limit_switch = 1000.0
         self.low_limit_switch = 0.0
-        self.cnen=1
-        self.error_message=''
-        self.reset_error=''
-        self.at_home=True
-        self.error_bit=0
+        self.cnen = 1
+        self.error_message = ''
+        self.reset_error = ''
+        self.at_home = True
+        self.error_bit = 0
 
         self.position_max = 1024
         self.position_min = 0
