@@ -17,17 +17,19 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # *********************************************************************
 
+import math
 from collections import OrderedDict
 
 from lewis.core import approaches
 from lewis.core.statemachine import State
+from lewis.core.utils import check_limits
 from lewis.devices import StateMachineDevice
 
 
 class DefaultMovingState(State):
     def in_state(self, dt):
         old_position = self._context.position
-        self._context.position = approaches.linear(old_position,
+        self._context._position = approaches.linear(old_position,
                                                    self._context.target,
                                                    self._context.speed, dt)
         self.log.info('Moved position (%s -> %s), target=%s, speed=%s',
@@ -40,7 +42,7 @@ class SimulatedMotor(StateMachineDevice):
     def _initialize_data(self):
         self._position = 0.0
         self._target = 0.0
-        self.speed = 2.0
+        self._speed = 2.0
         self._stop = False
         self.at_home = False
         self.homf = False
@@ -56,6 +58,10 @@ class SimulatedMotor(StateMachineDevice):
         self.reset_error=''
         self.at_home=True
         self.error_bit=0
+
+        self.position_max = 1024
+        self.position_min = 0
+        self.speed_max = math.pi
 
     def _get_state_handlers(self):
         return {
@@ -86,10 +92,6 @@ class SimulatedMotor(StateMachineDevice):
         return self.position, self._target
 
     @property
-    def state(self):
-        return self._csm.state
-
-    @property
     def position(self):
         return self._position
 
@@ -98,14 +100,30 @@ class SimulatedMotor(StateMachineDevice):
         return self._target
 
     @target.setter
-    def target(self, new_target):
+    @check_limits('position_min', 'position_max')
+    def target(self, value):
         if self.state == 'moving':
             print('Can not set new target while moving.')
 
-        if not (0 <= new_target <= 250):
+        if not (0 <= value <= 250):
             raise ValueError('Target is out of range [0, 250]')
-        self._target = new_target
+        self._target = value
         self.at_home = False
+
+    @property
+    def speed(self):
+        return self._speed
+
+    @speed.setter
+    @check_limits(0.0, 'speed_max')
+    def speed(self, value):
+        if not (0 <= value <= 250):
+            raise ValueError('Target is out of range [0, 250]')
+        self._speed = value
+
+    @property
+    def state(self):
+        return self._csm.state
 
     @property
     def stop(self):
