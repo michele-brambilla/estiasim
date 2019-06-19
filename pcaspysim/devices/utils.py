@@ -2,7 +2,7 @@ from __future__ import absolute_import
 
 import functools
 
-from devices.loggersim import log
+from .loggersim import log
 
 string_types = str
 

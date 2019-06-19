@@ -1,10 +1,11 @@
 #!/usr/bin/env python
-from __future__ import absolute_import
 
 import argparse
 from time import sleep
 
-from devices import EpicsDevice, EpicsDeviceSimulation, SignalHandler, log
+from devices.epicsdevicesim import EpicsDevice, EpicsDeviceSimulation
+from devices.loggersim import log
+from devices.sighandler import SignalHandler
 
 
 class MetronomyCart(EpicsDevice):

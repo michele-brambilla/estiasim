@@ -5,9 +5,9 @@ import threading
 import pcaspy.tools
 from pcaspy import Severity
 
-import devices.approaches as approaches
-import devices.utils as utils
-from devices.loggersim import log
+from .approaches import linear
+from .loggersim import log
+from .utils import run_async
 
 db_base = {
     'RBV': {
@@ -129,7 +129,7 @@ class MotorEpicsDriver(pcaspy.Driver):
             if 'CNEN' in pv:
                 self.setParam(pv, 1)
 
-    @utils.run_async
+    @run_async
     def _do_move(self, motor_name, target):
 
         # TODO: implement stop
@@ -153,7 +153,7 @@ class MotorEpicsDriver(pcaspy.Driver):
 
         current = self.getParam(pv_rbv)
         while current != target:
-            current = approaches.linear(current, target, motor_speed,
+            current = linear(current, target, motor_speed,
                                         self._dt)
             self.setParam(pv_rbv, current)
             self.updatePV(pv_rbv)

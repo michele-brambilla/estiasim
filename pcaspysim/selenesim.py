@@ -4,7 +4,9 @@ from __future__ import absolute_import
 import argparse
 from time import sleep
 
-from devices import EpicsDevice, EpicsDeviceSimulation, SignalHandler, log
+from devices.epicsdevicesim import EpicsDevice, EpicsDeviceSimulation
+from devices.loggersim import log
+from devices.sighandler import SignalHandler
 
 
 class SeleneGuide(EpicsDevice):
@@ -16,14 +18,15 @@ if __name__ == '__main__':
     ap.add_argument('-n', '--guide-name',
                     default='PSI-ESTIARND:MC-MCU-01',
                     help='Used as prefix for the epics PVs')
-    ap.add_argument('-m', '--motors-name',
+    ap.add_argument('-m', '--motor-names',
                     nargs='+',
                     default=['m10', 'm11', 'm12', 'm13', 'm14'],
                     help='Used as names for the epics PVs')
 
     args = ap.parse_args()
 
-    simulation = EpicsDeviceSimulation(args.guide_name, args.motors_name,
+    log.info(args.motor_names)
+    simulation = EpicsDeviceSimulation(args.guide_name, args.motor_names,
                                        SeleneGuide)
     simulation.start()
 
