@@ -6,7 +6,7 @@ from __future__ import absolute_import
 
 import signal
 
-from pcaspysim.devices import log
+from devices.loggerism import log
 
 
 class SignalHandler(object):

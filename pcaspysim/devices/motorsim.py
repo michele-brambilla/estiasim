@@ -5,9 +5,9 @@ import threading
 import pcaspy.tools
 from pcaspy import Severity
 
-import pcaspysim.devices.approaches as approaches
-import pcaspysim.devices.utils as utils
-from pcaspysim.devices import log
+import devices.approaches as approaches
+import devices.utils as utils
+from devices.loggersim import log
 
 db_base = {
     'RBV': {

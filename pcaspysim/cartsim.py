@@ -4,8 +4,7 @@ from __future__ import absolute_import
 import argparse
 from time import sleep
 
-from pcaspysim.devices import (EpicsDevice, EpicsDeviceSimulation,
-                               SignalHandler, log)
+from devices import EpicsDevice, EpicsDeviceSimulation, SignalHandler, log
 
 
 class MetronomyCart(EpicsDevice):
