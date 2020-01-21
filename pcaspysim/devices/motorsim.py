@@ -109,9 +109,8 @@ db_base = {
 class MotorEpicsDriver(pcaspy.Driver):
     _dt = None
 
-    def __init__(self, guide, pvdb, dt=10):
+    def __init__(self, pvdb, dt=10):
         super(MotorEpicsDriver, self).__init__()
-        self.guide = guide
         self.pvdb = pvdb
         self.threads = {}
         self._dt = dt
@@ -178,7 +177,7 @@ class MotorEpicsDriver(pcaspy.Driver):
 
 
 class Motor(object):
-    _default_driver = MotorEpicsDriver
+
     def __init__(self, name):
         self.name = name
         self.api_device = None
@@ -187,8 +186,8 @@ class Motor(object):
     def _get_pv_prefix(self):
         return '%s.' % self.name
 
-    def set_driver(self, driver):
-        self.driver = driver
+    def set_driver(self, driver=MotorEpicsDriver):
+        self.driver = driver(self.get_pvdb())
 
     def ret_driver(self):
         return MotorEpicsDriver
