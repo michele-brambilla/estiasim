@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 
 import threading
+from time import sleep
 
 import pcaspy.tools
 
@@ -47,11 +48,11 @@ db_base = {
 }
 
 
-class PowerSupplyDriver(pcaspy.Driver):
+class MDX5KDriver(pcaspy.Driver):
     _dt = None
 
     def __init__(self, pvdb, dt=.1):
-        super(PowerSupplyDriver, self).__init__()
+        super(MDX5KDriver, self).__init__()
         self.pvdb = pvdb
         self.threads = {}
         self._dt = dt
@@ -68,33 +69,37 @@ class PowerSupplyDriver(pcaspy.Driver):
             self.updatePV(pv_rbv)
 
     def write(self, pv, value):
+        print('port: %s' % self.port)
+        print(pv)
         fields = pv.split(':')
         (name, pv_field) = fields[:2] if len(fields) > 1 else \
             pv.split('-')[:2]
-
-        super(PowerSupplyDriver, self).write(pv, value)
+        print(name)
+        print(pv_field)
+        super(MDX5KDriver, self).write(pv, value)
         if pv_field in ['Voltage', 'Current', 'Power']:
             self.threads[pv_field] = threading.Thread(target=self._do_ramp,
                                                         args=(pv_field,
                                                               value)).start()
 
 
-class PowerSupply(object):
+class MDX5K(object):
 
     def __init__(self, name):
         self.name = name
-        self.api_device = None
         self.driver = None
 
     def _get_pv_prefix(self):
         return '%s.' % self.name
 
-    def set_driver(self, driver=PowerSupplyDriver):
+    def set_driver(self, driver=MDX5KDriver):
         self.driver = driver(self.get_pvdb())
+        sleep(1)
+        self.driver.write('AE01:Voltage', 10)
 
     @staticmethod
     def ret_driver():
-        return PowerSupplyDriver
+        return MDX5KDriver
 
     @staticmethod
     def get_pvdb():

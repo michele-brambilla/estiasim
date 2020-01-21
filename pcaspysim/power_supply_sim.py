@@ -5,24 +5,23 @@ from time import sleep
 
 from devices.epicsdevicesim import EpicsDevice, EpicsDeviceSimulation
 from devices.loggersim import log
-from devices.motorsim import Motor
+from devices.power_supply import MDX5K
 from devices.sighandler import SignalHandler
 
 if __name__ == '__main__':
     ap = argparse.ArgumentParser()
-    ap.add_argument('-n', '--cart-name',
-                    default='PSI-ESTIARND:MC-MCU-01',
+    ap.add_argument('-p', '--prefix',
+                    default='',
                     help='Used as prefix for the epics PVs')
-    ap.add_argument('-m', '--motor-names',
+    ap.add_argument('-n', '--names',
                     nargs='+',
-                    default=['m1', 'm2'],
+                    default=['AE01'],
                     help='Used as names for the epics PVs')
 
     args = ap.parse_args()
 
-    log.info(args.motor_names)
-    simulation = EpicsDeviceSimulation(args.cart_name, args.motor_names,
-                                       Motor)
+    log.info(args.names)
+    simulation = EpicsDeviceSimulation(args.prefix, args.names, MDX5K)
     simulation.start()
 
     signal_handler = SignalHandler()

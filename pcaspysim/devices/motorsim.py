@@ -114,7 +114,6 @@ class MotorEpicsDriver(pcaspy.Driver):
         self.pvdb = pvdb
         self.threads = {}
         self._dt = dt
-
         for pv in pvdb:
             self.setParamStatus(pv, 0, 0)
             if 'VELO' in pv:
@@ -127,6 +126,8 @@ class MotorEpicsDriver(pcaspy.Driver):
                 self.setParam(pv, 1)
             if 'CNEN' in pv:
                 self.setParam(pv, 1)
+        print(self.pvdb)
+        print(self.pvDB)
 
     @run_async
     def _do_move(self, motor_name, target):
@@ -165,6 +166,9 @@ class MotorEpicsDriver(pcaspy.Driver):
         [self.updatePV(pv) for pv in (pv_moving, pv_done_moving, pv_rbv)]
 
     def write(self, pv, value):
+        print('port: %s' % self.port)
+        print(pv)
+
         fields = pv.split('.')
         (motor_name, pv_field) = fields[:2] if len(fields) > 1 else \
             pv.split('-')[:2]
