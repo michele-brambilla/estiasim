@@ -4,12 +4,9 @@ import argparse
 from time import sleep
 
 from devices.epicsdevicesim import EpicsDevice, EpicsDeviceSimulation
+from devices.motorsim import Motor
 from devices.loggersim import log
 from devices.sighandler import SignalHandler
-
-
-class MetronomyCart(EpicsDevice):
-    pass
 
 
 if __name__ == '__main__':
@@ -26,7 +23,7 @@ if __name__ == '__main__':
 
     log.info(args.motor_names)
     simulation = EpicsDeviceSimulation(args.cart_name, args.motor_names,
-                                       MetronomyCart)
+                                       Motor)
     simulation.start()
 
     signal_handler = SignalHandler()

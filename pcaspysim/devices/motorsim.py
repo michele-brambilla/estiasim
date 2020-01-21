@@ -178,6 +178,7 @@ class MotorEpicsDriver(pcaspy.Driver):
 
 
 class Motor(object):
+    _default_driver = MotorEpicsDriver
     def __init__(self, name):
         self.name = name
         self.api_device = None
@@ -188,6 +189,9 @@ class Motor(object):
 
     def set_driver(self, driver):
         self.driver = driver
+
+    def ret_driver(self):
+        return MotorEpicsDriver
 
     def get_pvdb(self):
         db = {}

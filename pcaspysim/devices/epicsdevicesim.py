@@ -11,23 +11,23 @@ class EpicsDevice(object):
 
     _pvdb = {}
 
-    def __init__(self, name, mot_names):
-        self.name = name
+    def __init__(self, prefix, dev_names, dev_type):
+        self.prefix = prefix
 
-        self.motors = {}
-        for motor_name in mot_names:
-            motor = Motor(motor_name)
-            self.motors[motor_name] = motor
-            self._pvdb.update(motor.get_pvdb())
+        self.devices = {}
+        for dev_name in dev_names:
+            device = dev_type(dev_name)
+            self.devices[dev_name] = device
+            self._pvdb.update(device.get_pvdb())
 
         self.server = pcaspy.SimpleServer()
-        self.server.createPV(self.name + ':', self._pvdb)
+        self.server.createPV('%s:'self.prefix if self.prefix else '', self._pvdb)
         self.server_thread = pcaspy.tools.ServerThread(self.server)
 
-        self.driver = MotorEpicsDriver(self, self._pvdb)
+        self.driver = dev_type._default_driver(self, self._pvdb)
 
-        for _, motor in self.motors.items():
-            motor.set_driver(self.driver)
+        for device in list(self.devices.values()):
+            device.set_driver(self.driver)
 
     def start(self):
         # process CA transactions
@@ -40,8 +40,8 @@ class EpicsDevice(object):
 
 
 class EpicsDeviceSimulation(object):
-    def __init__(self, name, mot_names, device=EpicsDevice):
-        self.device = device(name, mot_names)
+    def __init__(self, prefix, dev_names, device):
+        self.device = EpicsDevice(prefix, dev_names, device)
 
     def start(self):
         self.device.start()
