@@ -4,14 +4,10 @@ from __future__ import absolute_import
 import argparse
 from time import sleep
 
-from devices.epicsdevicesim import EpicsDevice, EpicsDeviceSimulation
+from devices.epicsdevicesim import EpicsDeviceSimulation
 from devices.loggersim import log
+from devices.motorsim import Motor
 from devices.sighandler import SignalHandler
-
-
-class SeleneGuide(EpicsDevice):
-    pass
-
 
 if __name__ == '__main__':
     ap = argparse.ArgumentParser()
@@ -27,7 +23,7 @@ if __name__ == '__main__':
 
     log.info(args.motor_names)
     simulation = EpicsDeviceSimulation(args.guide_name, args.motor_names,
-                                       SeleneGuide)
+                                       Motor)
     simulation.start()
 
     signal_handler = SignalHandler()
