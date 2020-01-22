@@ -26,56 +26,61 @@ from lewis.core.utils import check_limits
 from lewis.devices import StateMachineDevice
 
 
-class DefaultMovingState(State):
-    def __init__(self, parameter):
-        super(DefaultMovingState, self).__init__()
-        self._parameter = parameter
-
+class OnState(State):
     def in_state(self, dt):
-        old = self._context.value
-        self._context._value = approaches.linear(old,
-                                                getattr(self._context,
-                                                        self._parameter),
-                                                self._context._speed, dt)
+        self._context.status = 'on'
 
-        self.log.info('Moved position (%s -> %s), target=%s, speed=%s',
-                      old, self._context.position, getattr(self._context,
-                                                        self._parameter),self._context._speed)
+
+class OffState(State):
+    def in_state(self, dt):
+        self._context.status = 'off'
 
 
 class SimulatedMDX5K(StateMachineDevice):
     speed = 1.0
+    modes = { 4: 'power', 5: 'current', 6: 'voltage' }
 
     def _initialize_data(self):
-        self.status = 'idle'
+        self.status = 'off'
         self.interlock = ''
-        self.status_command = ''
+        self._status_command = 0
         self._value = 0.0
-        self._voltage = 0.0
-        self._current = 0.0
-        self._power = 0.0
+        self.voltage = 0.0
+        self.current = 0.0
+        self.power = 0.0
         self._target = 0.0
 
     def _get_state_handlers(self):
         return {
-            'idle': State(),
-            'current': DefaultMovingState('current'),
-            'voltage': DefaultMovingState('voltage'),
-            'power': DefaultMovingState('power'),
-
+            'off': OffState(),
+            'on': OnState(),
         }
 
     def _get_initial_state(self):
-        return 'idle'
+        return 'off'
 
     def _get_transition_handlers(self):
         return OrderedDict([
-            ])
-    #         (('idle', 'moving'), lambda: self.position != self._target),
-    #
-    #         (('moving', 'idle'), lambda: (self.position == self._target)),
-    #
-    #     ])
+                (('off', 'on'), lambda: self._status_command == 1),
+                (('on', 'off'), lambda: self._status_command == 0),
+ ])
+
+    @property
+    def status_command(self):
+        return self._status_command
+
+    @status_command.setter
+    def status_command(self, value):
+        if value in [2,3]:
+            return
+        self._status_command = value
+        if value > 1:
+            if self.status == 1:
+                print('Switch to new mode forbidden if power is on')
+                return
+            for mode, name in self.modes.items():
+                setattr(self, name, True if mode == value else False)
+
 
     @property
     def target(self):
@@ -84,33 +89,6 @@ class SimulatedMDX5K(StateMachineDevice):
     @target.setter
     def target(self, value):
         self._target = value
-
-    @property
-    def current(self):
-        return self._current
-
-    @property
-    def voltage(self):
-        return self._voltage
-
-    @property
-    def power(self):
-        return self._power
-
-    @voltage.setter
-    @check_limits(0, 5000)
-    def voltage(self, value):
-        self._voltage = value
-
-    @current.setter
-    @check_limits(0, 5000)
-    def current(self, value):
-        self._current = value
-
-    @power.setter
-    @check_limits(0, 5000)
-    def power(self, value):
-        self._power = value
 
     @property
     def value(self):
@@ -125,7 +103,8 @@ class MDX5KEpicsInterface(EpicsInterface):
 
         'Status': PV('status', read_only=True, doc='Power supply status.', type='string'),
         'Interlock': PV('interlock', doc='Locked value.', type='string'),
-        'StatusCommand': PV('status_command', doc='who knows?', type='string'),
+        'StatusCommand': PV('status_command', doc='Command to switch status',
+                            type='int'),
         'OutputSetpoint-RBV': PV('value', read_only=True,
                    doc='Readback value for the setpoint.'),
         'OutputSetpoint': PV('target', doc='Target value.'),

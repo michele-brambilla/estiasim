@@ -43,7 +43,6 @@ class WagoSimulatedDevice(Device):
         value = what[1]
         print(channel)
         print(value)
-        return 'what'
 
 
 class WagoInterface(StreamInterface):
