@@ -30,11 +30,11 @@ class SimulatedMotor(StateMachineDevice):
         self.homf = False
         self.homr = True
         self.motor_offset = 0.0
-        self.high_limit = 1000.0
-        self.low_limit = 0.0
+        self.high_limit = 10.0
+        self.low_limit = -10.0
         self.soft_limit = 1.0
-        self.high_limit_switch = 1000.0
-        self.low_limit_switch = 0.0
+        self.high_limit_switch = 10.0
+        self.low_limit_switch = -10.0
         self.cnen = 1
         self.error_message = ''
         self.reset_error = ''

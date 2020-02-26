@@ -575,6 +575,7 @@ class SpsS7EpicsInterface(EpicsInterface):
     _last_command = ''
 
     @property
+
     def execute_command(self):
         """
         Command to execute. Possible commands are start, stop.
