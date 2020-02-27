@@ -18,7 +18,8 @@ def select_%d(self):
 
 @select_%d.setter
 def select_%d(self, value):
-    self._values, self._mask = select_impl(%d, self._values, self._mask)
+    if value:
+        self._values, self._mask = select_impl(%d, self._values, self._mask)
 """
 
 for i in range(1,37):

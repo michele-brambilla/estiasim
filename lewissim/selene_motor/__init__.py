@@ -32,17 +32,13 @@ class SimulatedMotor(StateMachineDevice):
         self.motor_offset = 0.0
         self.high_limit = 10.0
         self.low_limit = -10.0
-        self.soft_limit = 1.0
-        self.high_limit_switch = 10.0
-        self.low_limit_switch = -10.0
+        self.soft_limit = 0.0
         self.cnen = 1
         self.error_message = ''
         self.reset_error = ''
         self.at_home = True
         self.error_bit = 0
 
-        self.position_max = 1024
-        self.position_min = 0
         self.speed_max = math.pi
 
     def _get_state_handlers(self):
@@ -90,7 +86,7 @@ class SimulatedMotor(StateMachineDevice):
         return self._target
 
     @target.setter
-    @check_limits('position_min', 'position_max')
+    @check_limits('low_limit', 'high_limit')
     def target(self, value):
         if self.state == 'moving':
             print('Can not set new target while moving.')
@@ -135,7 +131,15 @@ class SimulatedMotor(StateMachineDevice):
 
     @property
     def miss(self):
-        return self.target == self.position
+        return False
+
+    @property
+    def high_limit_switch(self):
+        return self._position >= self.high_limit
+
+    @property
+    def low_limit_switch(self):
+        return self._position <= self.low_limit
 
 
 class MotorEpicsInterface(EpicsInterface):
