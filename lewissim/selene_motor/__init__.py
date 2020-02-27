@@ -32,7 +32,7 @@ class SimulatedMotor(StateMachineDevice):
         self.motor_offset = 0.0
         self.high_limit = 10.0
         self.low_limit = -10.0
-        self.soft_limit = 1.0
+        self.soft_limit = 10.0
         self.high_limit_switch = 10.0
         self.low_limit_switch = -10.0
         self.cnen = 1
@@ -135,7 +135,7 @@ class SimulatedMotor(StateMachineDevice):
 
     @property
     def miss(self):
-        return self.target == self.position
+        return False
 
 
 class MotorEpicsInterface(EpicsInterface):

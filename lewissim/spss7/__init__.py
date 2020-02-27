@@ -34,6 +34,10 @@ def select_impl(pitch, value, mask):
     return value^mask, mask
 
 
+def selected_impl(pitch, values):
+    return values >> int(pitch-1) & 0b1
+
+
 class SimulatedSps(Device):
     _fine_adjustment = 0
     _fa_select = 0
@@ -50,176 +54,153 @@ class SimulatedSps(Device):
             setattr(self, '%s_%d'%('selectable', i), 1)
         super(SimulatedSps, self).__init__()
 
-    def _selected_impl(self, pitch):
-        return self._values >> int(pitch-1) & 0b1
+    ###################
 
     @property
     def selected_1(self):
-        return self._selected_impl(1)
+        return selected_impl(1, self._values)
 
     @property
     def selected_2(self):
-        return self._selected_impl(2)
+        return selected_impl(2, self._values)
 
     @property
     def selected_3(self):
-        return self._selected_impl(3)
+        return selected_impl(3, self._values)
 
     @property
     def selected_4(self):
-        return self._selected_impl(4)
+        return selected_impl(4, self._values)
 
     @property
     def selected_5(self):
-        return self._selected_impl(5)
+        return selected_impl(5, self._values)
 
     @property
     def selected_6(self):
-        return self._selected_impl(6)
+        return selected_impl(6, self._values)
 
     @property
     def selected_7(self):
-        return self._selected_impl(7)
+        return selected_impl(7, self._values)
 
     @property
     def selected_8(self):
-        return self._selected_impl(8)
+        return selected_impl(8, self._values)
 
     @property
     def selected_9(self):
-        return self._selected_impl(9)
+        return selected_impl(9, self._values)
 
     @property
     def selected_10(self):
-        return self._selected_impl(10)
+        return selected_impl(10, self._values)
 
     @property
     def selected_11(self):
-        return self._selected_impl(11)
+        return selected_impl(11, self._values)
 
     @property
     def selected_12(self):
-        return self._selected_impl(12)
+        return selected_impl(12, self._values)
 
     @property
     def selected_13(self):
-        return self._selected_impl(13)
-
+        return selected_impl(13, self._values)
 
     @property
     def selected_14(self):
-        return self._selected_impl(14)
-
+        return selected_impl(14, self._values)
 
     @property
     def selected_15(self):
-        return self._selected_impl(15)
-
+        return selected_impl(15, self._values)
 
     @property
     def selected_16(self):
-        return self._selected_impl(16)
-
+        return selected_impl(16, self._values)
 
     @property
     def selected_17(self):
-        return self._selected_impl(17)
-
+        return selected_impl(17, self._values)
 
     @property
     def selected_18(self):
-        return self._selected_impl(18)
+        return selected_impl(18, self._values)
 
     @property
     def selected_19(self):
-        return self._selected_impl(19)
-
+        return selected_impl(19, self._values)
 
     @property
     def selected_20(self):
-        return self._selected_impl(20)
-
+        return selected_impl(20, self._values)
 
     @property
     def selected_21(self):
-        return self._selected_impl(21)
-
+        return selected_impl(21, self._values)
 
     @property
     def selected_22(self):
-        return self._selected_impl(22)
-
+        return selected_impl(22, self._values)
 
     @property
     def selected_23(self):
-        return self._selected_impl(23)
-
+        return selected_impl(23, self._values)
 
     @property
     def selected_24(self):
-        return self._selected_impl(24)
-
+        return selected_impl(24, self._values)
 
     @property
     def selected_25(self):
-        return self._selected_impl(25)
-
+        return selected_impl(25, self._values)
 
     @property
     def selected_26(self):
-        return self._selected_impl(26)
-
+        return selected_impl(26, self._values)
 
     @property
     def selected_27(self):
-        return self._selected_impl(27)
-
+        return selected_impl(27, self._values)
 
     @property
     def selected_28(self):
-        return self._selected_impl(28)
-
+        return selected_impl(28, self._values)
 
     @property
     def selected_29(self):
-        return self._selected_impl(29)
-
+        return selected_impl(29, self._values)
 
     @property
     def selected_30(self):
-        return self._selected_impl(30)
-
+        return selected_impl(30, self._values)
 
     @property
     def selected_31(self):
-        return self._selected_impl(31)
-
+        return selected_impl(31, self._values)
 
     @property
     def selected_32(self):
-        return self._selected_impl(32)
-
+        return selected_impl(32, self._values)
 
     @property
     def selected_33(self):
-        return self._selected_impl(33)
-
+        return selected_impl(33, self._values)
 
     @property
     def selected_34(self):
-        return self._selected_impl(34)
-
+        return selected_impl(34, self._values)
 
     @property
     def selected_35(self):
-        return self._selected_impl(35)
-
+        return selected_impl(35, self._values)
 
     @property
     def selected_36(self):
-        return self._selected_impl(36)
+        return selected_impl(36, self._values)
 
-###################
+    ###################
 
     @property
     def select_1(self):
@@ -227,7 +208,8 @@ class SimulatedSps(Device):
 
     @select_1.setter
     def select_1(self, value):
-        self._values, self._mask = select_impl(1, self._values, self._mask)
+        if value:
+            self._values, self._mask = select_impl(1, self._values, self._mask)
 
     @property
     def select_2(self):
@@ -235,7 +217,8 @@ class SimulatedSps(Device):
 
     @select_2.setter
     def select_2(self, value):
-        self._values, self._mask = select_impl(2, self._values, self._mask)
+        if value:
+            self._values, self._mask = select_impl(2, self._values, self._mask)
 
     @property
     def select_3(self):
@@ -243,7 +226,8 @@ class SimulatedSps(Device):
 
     @select_3.setter
     def select_3(self, value):
-        self._values, self._mask = select_impl(3, self._values, self._mask)
+        if value:
+            self._values, self._mask = select_impl(3, self._values, self._mask)
 
     @property
     def select_4(self):
@@ -251,7 +235,8 @@ class SimulatedSps(Device):
 
     @select_4.setter
     def select_4(self, value):
-        self._values, self._mask = select_impl(4, self._values, self._mask)
+        if value:
+            self._values, self._mask = select_impl(4, self._values, self._mask)
 
     @property
     def select_5(self):
@@ -259,7 +244,8 @@ class SimulatedSps(Device):
 
     @select_5.setter
     def select_5(self, value):
-        self._values, self._mask = select_impl(5, self._values, self._mask)
+        if value:
+            self._values, self._mask = select_impl(5, self._values, self._mask)
 
     @property
     def select_6(self):
@@ -267,7 +253,8 @@ class SimulatedSps(Device):
 
     @select_6.setter
     def select_6(self, value):
-        self._values, self._mask = select_impl(6, self._values, self._mask)
+        if value:
+            self._values, self._mask = select_impl(6, self._values, self._mask)
 
     @property
     def select_7(self):
@@ -275,7 +262,8 @@ class SimulatedSps(Device):
 
     @select_7.setter
     def select_7(self, value):
-        self._values, self._mask = select_impl(7, self._values, self._mask)
+        if value:
+            self._values, self._mask = select_impl(7, self._values, self._mask)
 
     @property
     def select_8(self):
@@ -283,7 +271,8 @@ class SimulatedSps(Device):
 
     @select_8.setter
     def select_8(self, value):
-        self._values, self._mask = select_impl(8, self._values, self._mask)
+        if value:
+            self._values, self._mask = select_impl(8, self._values, self._mask)
 
     @property
     def select_9(self):
@@ -291,7 +280,8 @@ class SimulatedSps(Device):
 
     @select_9.setter
     def select_9(self, value):
-        self._values, self._mask = select_impl(9, self._values, self._mask)
+        if value:
+            self._values, self._mask = select_impl(9, self._values, self._mask)
 
     @property
     def select_10(self):
@@ -299,7 +289,9 @@ class SimulatedSps(Device):
 
     @select_10.setter
     def select_10(self, value):
-        self._values, self._mask = select_impl(10, self._values, self._mask)
+        if value:
+            self._values, self._mask = select_impl(10, self._values,
+                                                   self._mask)
 
     @property
     def select_11(self):
@@ -307,7 +299,9 @@ class SimulatedSps(Device):
 
     @select_11.setter
     def select_11(self, value):
-        self._values, self._mask = select_impl(11, self._values, self._mask)
+        if value:
+            self._values, self._mask = select_impl(11, self._values,
+                                                   self._mask)
 
     @property
     def select_12(self):
@@ -315,7 +309,9 @@ class SimulatedSps(Device):
 
     @select_12.setter
     def select_12(self, value):
-        self._values, self._mask = select_impl(12, self._values, self._mask)
+        if value:
+            self._values, self._mask = select_impl(12, self._values,
+                                                   self._mask)
 
     @property
     def select_13(self):
@@ -323,7 +319,9 @@ class SimulatedSps(Device):
 
     @select_13.setter
     def select_13(self, value):
-        self._values, self._mask = select_impl(13, self._values, self._mask)
+        if value:
+            self._values, self._mask = select_impl(13, self._values,
+                                                   self._mask)
 
     @property
     def select_14(self):
@@ -331,7 +329,9 @@ class SimulatedSps(Device):
 
     @select_14.setter
     def select_14(self, value):
-        self._values, self._mask = select_impl(14, self._values, self._mask)
+        if value:
+            self._values, self._mask = select_impl(14, self._values,
+                                                   self._mask)
 
     @property
     def select_15(self):
@@ -339,7 +339,9 @@ class SimulatedSps(Device):
 
     @select_15.setter
     def select_15(self, value):
-        self._values, self._mask = select_impl(15, self._values, self._mask)
+        if value:
+            self._values, self._mask = select_impl(15, self._values,
+                                                   self._mask)
 
     @property
     def select_16(self):
@@ -347,7 +349,9 @@ class SimulatedSps(Device):
 
     @select_16.setter
     def select_16(self, value):
-        self._values, self._mask = select_impl(16, self._values, self._mask)
+        if value:
+            self._values, self._mask = select_impl(16, self._values,
+                                                   self._mask)
 
     @property
     def select_17(self):
@@ -355,7 +359,9 @@ class SimulatedSps(Device):
 
     @select_17.setter
     def select_17(self, value):
-        self._values, self._mask = select_impl(17, self._values, self._mask)
+        if value:
+            self._values, self._mask = select_impl(17, self._values,
+                                                   self._mask)
 
     @property
     def select_18(self):
@@ -363,7 +369,9 @@ class SimulatedSps(Device):
 
     @select_18.setter
     def select_18(self, value):
-        self._values, self._mask = select_impl(18, self._values, self._mask)
+        if value:
+            self._values, self._mask = select_impl(18, self._values,
+                                                   self._mask)
 
     @property
     def select_19(self):
@@ -371,7 +379,9 @@ class SimulatedSps(Device):
 
     @select_19.setter
     def select_19(self, value):
-        self._values, self._mask = select_impl(19, self._values, self._mask)
+        if value:
+            self._values, self._mask = select_impl(19, self._values,
+                                                   self._mask)
 
     @property
     def select_20(self):
@@ -379,7 +389,9 @@ class SimulatedSps(Device):
 
     @select_20.setter
     def select_20(self, value):
-        self._values, self._mask = select_impl(20, self._values, self._mask)
+        if value:
+            self._values, self._mask = select_impl(20, self._values,
+                                                   self._mask)
 
     @property
     def select_21(self):
@@ -387,7 +399,9 @@ class SimulatedSps(Device):
 
     @select_21.setter
     def select_21(self, value):
-        self._values, self._mask = select_impl(21, self._values, self._mask)
+        if value:
+            self._values, self._mask = select_impl(21, self._values,
+                                                   self._mask)
 
     @property
     def select_22(self):
@@ -395,7 +409,9 @@ class SimulatedSps(Device):
 
     @select_22.setter
     def select_22(self, value):
-        self._values, self._mask = select_impl(22, self._values, self._mask)
+        if value:
+            self._values, self._mask = select_impl(22, self._values,
+                                                   self._mask)
 
     @property
     def select_23(self):
@@ -403,7 +419,9 @@ class SimulatedSps(Device):
 
     @select_23.setter
     def select_23(self, value):
-        self._values, self._mask = select_impl(23, self._values, self._mask)
+        if value:
+            self._values, self._mask = select_impl(23, self._values,
+                                                   self._mask)
 
     @property
     def select_24(self):
@@ -411,7 +429,9 @@ class SimulatedSps(Device):
 
     @select_24.setter
     def select_24(self, value):
-        self._values, self._mask = select_impl(24, self._values, self._mask)
+        if value:
+            self._values, self._mask = select_impl(24, self._values,
+                                                   self._mask)
 
     @property
     def select_25(self):
@@ -419,7 +439,9 @@ class SimulatedSps(Device):
 
     @select_25.setter
     def select_25(self, value):
-        self._values, self._mask = select_impl(25, self._values, self._mask)
+        if value:
+            self._values, self._mask = select_impl(25, self._values,
+                                                   self._mask)
 
     @property
     def select_26(self):
@@ -427,7 +449,9 @@ class SimulatedSps(Device):
 
     @select_26.setter
     def select_26(self, value):
-        self._values, self._mask = select_impl(26, self._values, self._mask)
+        if value:
+            self._values, self._mask = select_impl(26, self._values,
+                                                   self._mask)
 
     @property
     def select_27(self):
@@ -435,7 +459,9 @@ class SimulatedSps(Device):
 
     @select_27.setter
     def select_27(self, value):
-        self._values, self._mask = select_impl(27, self._values, self._mask)
+        if value:
+            self._values, self._mask = select_impl(27, self._values,
+                                                   self._mask)
 
     @property
     def select_28(self):
@@ -443,7 +469,9 @@ class SimulatedSps(Device):
 
     @select_28.setter
     def select_28(self, value):
-        self._values, self._mask = select_impl(28, self._values, self._mask)
+        if value:
+            self._values, self._mask = select_impl(28, self._values,
+                                                   self._mask)
 
     @property
     def select_29(self):
@@ -451,7 +479,9 @@ class SimulatedSps(Device):
 
     @select_29.setter
     def select_29(self, value):
-        self._values, self._mask = select_impl(29, self._values, self._mask)
+        if value:
+            self._values, self._mask = select_impl(29, self._values,
+                                                   self._mask)
 
     @property
     def select_30(self):
@@ -459,7 +489,9 @@ class SimulatedSps(Device):
 
     @select_30.setter
     def select_30(self, value):
-        self._values, self._mask = select_impl(30, self._values, self._mask)
+        if value:
+            self._values, self._mask = select_impl(30, self._values,
+                                                   self._mask)
 
     @property
     def select_31(self):
@@ -467,7 +499,9 @@ class SimulatedSps(Device):
 
     @select_31.setter
     def select_31(self, value):
-        self._values, self._mask = select_impl(31, self._values, self._mask)
+        if value:
+            self._values, self._mask = select_impl(31, self._values,
+                                                   self._mask)
 
     @property
     def select_32(self):
@@ -475,7 +509,9 @@ class SimulatedSps(Device):
 
     @select_32.setter
     def select_32(self, value):
-        self._values, self._mask = select_impl(32, self._values, self._mask)
+        if value:
+            self._values, self._mask = select_impl(32, self._values,
+                                                   self._mask)
 
     @property
     def select_33(self):
@@ -483,7 +519,9 @@ class SimulatedSps(Device):
 
     @select_33.setter
     def select_33(self, value):
-        self._values, self._mask = select_impl(33, self._values, self._mask)
+        if value:
+            self._values, self._mask = select_impl(33, self._values,
+                                                   self._mask)
 
     @property
     def select_34(self):
@@ -491,7 +529,9 @@ class SimulatedSps(Device):
 
     @select_34.setter
     def select_34(self, value):
-        self._values, self._mask = select_impl(34, self._values, self._mask)
+        if value:
+            self._values, self._mask = select_impl(34, self._values,
+                                                   self._mask)
 
     @property
     def select_35(self):
@@ -499,7 +539,9 @@ class SimulatedSps(Device):
 
     @select_35.setter
     def select_35(self, value):
-        self._values, self._mask = select_impl(35, self._values, self._mask)
+        if value:
+            self._values, self._mask = select_impl(35, self._values,
+                                                   self._mask)
 
     @property
     def select_36(self):
@@ -507,9 +549,11 @@ class SimulatedSps(Device):
 
     @select_36.setter
     def select_36(self, value):
-        self._values, self._mask = select_impl(36, self._values, self._mask)
+        if value:
+            self._values, self._mask = select_impl(36, self._values,
+                                                   self._mask)
 
-##################
+    ##################
 
     @property
     def fa_read(self):
