@@ -9,6 +9,10 @@ from lewis.devices import StateMachineDevice
 
 
 class DefaultMovingState(State):
+    def on_entry(self, dt):
+        self._context.moving = 1
+        self._context.done_moving = 0
+
     def in_state(self, dt):
         old_position = self._context.position
         self._context._position = approaches.linear(old_position,
@@ -18,6 +22,10 @@ class DefaultMovingState(State):
                       old_position,
                       self._context.position, self._context.target,
                       self._context.speed)
+
+    def on_exit(self, dt):
+        self._context.moving = 0
+        self._context.done_moving = 1
 
 
 class SimulatedMotor(StateMachineDevice):
@@ -38,7 +46,9 @@ class SimulatedMotor(StateMachineDevice):
         self.reset_error = ''
         self.at_home = True
         self.error_bit = 0
-
+        self.set = 0
+        self.moving = 0
+        self.done_moving = 0
         self.speed_max = math.pi
 
     def _get_state_handlers(self):
@@ -121,13 +131,13 @@ class SimulatedMotor(StateMachineDevice):
             self._target = self.position
         self._stop = False
 
-    @property
-    def done_moving(self):
-        return self.target == self.position
-
-    @property
-    def moving(self):
-        return self.target != self.position and not self._stop
+    # @property
+    # def done_moving(self):
+    #     return self.target == self.position
+    #
+    # @property
+    # def moving(self):
+    #     return self.target != self.position and not self._stop
 
     @property
     def miss(self):
@@ -181,6 +191,7 @@ class MotorEpicsInterface(EpicsInterface):
         '.LLS': PV('low_limit_switch',
                   doc='Low limit switch in mm'),
         '.CNEN': PV('cnen'),
+        '.SET' : PV('set'),
         '-MsgTxt': PV('error_message', read_only=True, type='string',
                      doc='Error message'),
         '-SetPosition': PV('set_position', doc='Define motor position'),
