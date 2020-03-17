@@ -9,6 +9,10 @@ from lewis.devices import StateMachineDevice
 
 
 class DefaultMovingState(State):
+    def on_entry(self, dt):
+        self._context.moving = 1
+        self._context.done_moving = 0
+
     def in_state(self, dt):
         old_position = self._context.position
         self._context._position = approaches.linear(old_position,
@@ -18,6 +22,10 @@ class DefaultMovingState(State):
                       old_position,
                       self._context.position, self._context.target,
                       self._context.speed)
+
+    def on_exit(self, dt):
+        self._context.moving = 0
+        self._context.done_moving = 1
 
 
 class SimulatedMotor(StateMachineDevice):
@@ -32,17 +40,15 @@ class SimulatedMotor(StateMachineDevice):
         self.motor_offset = 0.0
         self.high_limit = 10.0
         self.low_limit = -10.0
-        self.soft_limit = 10.0
-        self.high_limit_switch = 10.0
-        self.low_limit_switch = -10.0
+        self.soft_limit = 0.0
         self.cnen = 1
         self.error_message = ''
         self.reset_error = ''
         self.at_home = True
         self.error_bit = 0
-
-        self.position_max = 1024
-        self.position_min = 0
+        self.set = 0
+        self.moving = 0
+        self.done_moving = 0
         self.speed_max = math.pi
 
     def _get_state_handlers(self):
@@ -90,7 +96,7 @@ class SimulatedMotor(StateMachineDevice):
         return self._target
 
     @target.setter
-    @check_limits('position_min', 'position_max')
+    @check_limits('low_limit', 'high_limit')
     def target(self, value):
         if self.state == 'moving':
             print('Can not set new target while moving.')
@@ -125,17 +131,30 @@ class SimulatedMotor(StateMachineDevice):
             self._target = self.position
         self._stop = False
 
-    @property
-    def done_moving(self):
-        return self.target == self.position
-
-    @property
-    def moving(self):
-        return self.target != self.position and not self._stop
+    # @property
+    # def done_moving(self):
+    #     return self.target == self.position
+    #
+    # @property
+    # def moving(self):
+    #     return self.target != self.position and not self._stop
 
     @property
     def miss(self):
         return False
+
+    @property
+    def high_limit_switch(self):
+        return self._position >= self.high_limit
+
+    @property
+<<<<<<< HEAD
+    def miss(self):
+        return False
+=======
+    def low_limit_switch(self):
+        return self._position <= self.low_limit
+>>>>>>> pcmaster
 
 
 class MotorEpicsInterface(EpicsInterface):
@@ -177,6 +196,7 @@ class MotorEpicsInterface(EpicsInterface):
         '.LLS': PV('low_limit_switch',
                   doc='Low limit switch in mm'),
         '.CNEN': PV('cnen'),
+        '.SET' : PV('set'),
         '-MsgTxt': PV('error_message', read_only=True, type='string',
                      doc='Error message'),
         '-SetPosition': PV('set_position', doc='Define motor position'),
