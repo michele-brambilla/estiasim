@@ -4,6 +4,8 @@ from lewis.adapters.epics import PV, EpicsInterface
 from lewis.core.statemachine import State
 from lewis.devices import Device
 
+from epics import caput, caget
+
 
 def r_select_impl(pitch, mask):
     return mask >> int(pitch - 1) & 0b1
@@ -23,10 +25,13 @@ def selected_impl(pitch, values):
     return (values >> int(pitch - 1)) & 0b1
 
 
+
+
 class SimulatedSps(Device):
     _fine_adjustment1 = 0
     _fine_adjustment2 = 0
-    _fa_select = 0
+    _fa_select1 = 0
+    _fa_select2 = 0
     _values = 0b0
     _mask = 0b0
     move = 0
@@ -37,8 +42,9 @@ class SimulatedSps(Device):
                           'park_position', 'alarm']:
                 setattr(self, '%s_%d' % (param, i), 0)
         for i in range(1, 37):
-            setattr(self, '%s_%d' % ('selectable', i), 1)
+            setattr(self, '%s_%d' % ('selectable', i), i >= 18)
         super(SimulatedSps, self).__init__()
+        self.cmd = ''
 
     ###################
 
@@ -491,42 +497,28 @@ class SimulatedSps(Device):
         return self._fine_adjustment2
 
     @property
-    def fa_select(self):
-        mcu = self._get_mcu_id()
-        if mcu == 1:
-            return self._fine_adjustment1
-        if mcu == 2:
-            return self._fine_adjustment2
-        return 0
+    def fa_select1(self):
+        return self._fine_adjustment1
 
-    @fa_select.setter
-    def fa_select(self, value):
-        mcu = self._get_mcu_id()
-        print('set fine adjustment %d'%mcu)
-        if not mcu:
-            return
-        self._fa_select = 1 if value else 0
-        if mcu == 1:
-            self._fine_adjustment1 ^= self._fa_select
-        if mcu == 2:
-            self._fine_adjustment2 ^= self._fa_select
-        print((self._fine_adjustment1, self._fine_adjustment2))
+    @fa_select1.setter
+    def fa_select1(self, value):
+        self._fa_select1 = 1 if value else 0
+        self._fine_adjustment1 ^= self._fa_select1
+
+    @property
+    def fa_select2(self):
+        return self._fine_adjustment2
+
+    @fa_select2.setter
+    def fa_select2(self, value):
+        self._fa_select2 = 1 if value else 0
+        self._fine_adjustment2 ^= self._fa_select2
 
     # debug
     def _find_pitch(self):
         for p in range(36):
             print('pitch%d: %r' % (p + 1, self._values >> p & 0b1))
         print('')
-
-    def _get_mcu_id(self):
-        mask = int('1' * 18, 2)
-        low = self._values & mask
-        high = self._values & (mask << 18)
-        if low:
-            return 1
-        if high:
-            return 2
-        return None
 
     def _get_state_handlers(self):
         return {
@@ -539,20 +531,34 @@ class SimulatedSps(Device):
     def _get_transition_handlers(self):
         return OrderedDict()
 
+    @property
+    def aout(self):
+        return self.cmd
+
+    @aout.setter
+    def aout(self, command):
+        if command == 'P850=3':
+            parking_position=caget('SQ:AMOR:SEL2:MIRROR.HLM')
+            caput('SQ:AMOR:SEL2:MIRROR.VAL', parking_position)
+
+    @property
+    def ainp(self):
+        return ''
+
 
 def pitch_pvs(pitchid):
     x = {
-        'P%d:Select' % pitchid: PV('select_%d' % pitchid, read_only=False,
+        ':P%d:Select' % pitchid: PV('select_%d' % pitchid, read_only=False,
                                    doc='Select pitch', type='int'),
-        'P%d:Selectable' % pitchid: PV('selectable_%d' % pitchid, type='int',
+        ':P%d:Selectable' % pitchid: PV('selectable_%d' % pitchid, type='int',
                                        read_only=True, doc='Pitch can be '
                                                            'selected'),
-        'P%d:Selected' % pitchid: PV('selected_%d' % pitchid, type='int',
+        ':P%d:Selected' % pitchid: PV('selected_%d' % pitchid, type='int',
                                      read_only=True, doc='Pitch is selected'),
-        'P%d:ParkPosition' % pitchid: PV('park_position_%d' % pitchid,
+        ':P%d:ParkPosition' % pitchid: PV('park_position_%d' % pitchid,
                                          doc='Pitch is parked', type='int',
                                          read_only=True),
-        'P%d:Alarm' % pitchid: PV('alarm_%d' % pitchid, read_only=True,
+        ':P%d:Alarm' % pitchid: PV('alarm_%d' % pitchid, read_only=True,
                                   type='int')
         }
     return x
@@ -560,17 +566,26 @@ def pitch_pvs(pitchid):
 
 class SpsS7EpicsInterface(EpicsInterface):
     pvs = {
-        'FineAdjustment:Select': PV('fa_select',
+        ':MCU1:FineAdjustment:Select': PV('fa_select1',
                                     doc='Enable fine adjustment of the '
                                         'mirrors', type='int'),
-        'MCU1:FineAdjustmentSelected': PV('fa_read1',
+        ':MCU2:FineAdjustment:Select': PV('fa_select2',
+                                    doc='Enable fine adjustment of the '
+                                        'mirrors', type='int'),
+        ':MCU1:FineAdjustment:Selected': PV('fa_read1',
                                           doc='Fine adjustment selected',
                                           read_only=True, type='int'),
-        'MCU2:FineAdjustmentSelected': PV('fa_read2',
+        ':MCU2:FineAdjustment:Selected': PV('fa_read2',
                                           doc='Fine adjustment selected',
                                           read_only=True, type='int'),
-        'MCU2:Move': PV('move', doc='NOT WORKING -- Motor is moving',
-                        read_only=True, type='int')
+        ':MCU2:Move': PV('move', doc='NOT WORKING -- Motor is moving',
+                        read_only=True, type='int'),
+        ':MCU1:Move': PV('move', doc='NOT WORKING -- Motor is moving',
+                        read_only=True, type='int'),
+        '.AOUT': PV('aout', doc='Direct connection to EPICS asyn Octet',
+                   type='string'),
+        '.AINP': PV('ainp', doc='Readback from EPICS asyn Octet',
+                   type='string'),
         }
     for pid in range(1, 37):
         pvs.update(pitch_pvs(pid))
