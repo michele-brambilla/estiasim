@@ -61,12 +61,27 @@ db_base = {
         'unit': 'mm',
         'description': 'Offset | mm | Read/Write',
     },
+    'FOFF': {
+        'type': 'float',
+        'unit': 'mm',
+        'description': 'Offset | mm | Read/Write',
+    },
     'HLM': {
         'type': 'float',
         'unit': 'mm',
         'description': 'High limit | mm | Read',
     },
     'LLM': {
+        'type': 'float',
+        'unit': 'mm',
+        'description': 'Low limit | mm | Read',
+    },
+    'DHLM': {
+        'type': 'float',
+        'unit': 'mm',
+        'description': 'High limit | mm | Read',
+    },
+    'DLLM': {
         'type': 'float',
         'unit': 'mm',
         'description': 'Low limit | mm | Read',
@@ -102,7 +117,10 @@ db_base = {
         'type': 'string',
         'description': 'Error message'
     },
-
+    'SET': {'type': 'float', 'unit': 'mm',
+        'description': 'Enable set position | mm | Read/Write', },
+    'SetPosition' : {'type': 'float', 'unit': 'mm',
+        'description': 'Set motor position | mm | Read/Write', },
 }
 
 
